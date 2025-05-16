@@ -1,0 +1,199 @@
+import java.util.*;
+
+class ArtNode {
+    String name;
+    int price;
+    ArtNode left, right;
+
+    ArtNode(String name, int price) {
+        this.name = name;
+        this.price = price;
+        this.left = this.right = null;
+    }
+}
+
+class ArtTree {
+    ArtNode root;
+
+    public void insert(String name, int price) {
+        root = insertRec(root, name, price);
+    }
+
+    private ArtNode insertRec(ArtNode root, String name, int price) {
+        if (root == null) {
+            return new ArtNode(name, price);
+        }
+        if (name.compareToIgnoreCase(root.name) < 0)
+            root.left = insertRec(root.left, name, price);
+        else
+            root.right = insertRec(root.right, name, price);
+        return root;
+    }
+
+    public void displayArtworks() {
+        if (root == null) {
+            System.out.println("No artworks available.");
+        } else {
+            System.out.println("Available Artworks:");
+            displayRec(root);
+        }
+    }
+
+    private void displayRec(ArtNode root) {
+        if (root != null) {
+            displayRec(root.left);
+            System.out.println("- " + root.name + " (Rs." + root.price + ")");
+            displayRec(root.right);
+        }
+    }
+
+    public ArtNode search(String name) {
+        return searchRec(root, name);
+    }
+
+    private ArtNode searchRec(ArtNode root, String name) {
+        if (root == null || root.name.equalsIgnoreCase(name)) {
+            return root;
+        }
+        if (name.compareToIgnoreCase(root.name) < 0)
+            return searchRec(root.left, name);
+        else
+            return searchRec(root.right, name);
+    }
+}
+
+public class art {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        ArtTree tree = new ArtTree();
+
+        tree.insert("The Starry Nights", 20500);
+        tree.insert("Boreas", 18000);
+        tree.insert("Glow of Hope", 22000);
+        tree.insert("Taj Mahal Mausoleum", 19500);
+        tree.insert("The Angelus", 23500);
+        tree.insert("Self portrait", 18000);
+        tree.insert("Charles I in three Positions", 22000);
+        tree.insert("The soul of rose", 17500);
+        tree.insert("The days of glory", 22000);
+        tree.insert("The Wanderer above the sea of fog", 26500);
+
+        System.out.println("Welcome to the Exclusive Art Auction");
+
+        try {
+            System.out.print("Enter your login ID: ");
+            int num = sc.nextInt();
+
+            if (num == 15) {
+                try {
+                    System.out.print("Enter your Password: ");
+                    int pw = sc.nextInt();
+                    sc.nextLine(); 
+
+                    if (pw == 2005) {
+                        System.out.println("You are successfully logged in");
+
+                        boolean exit = false;
+                        while (!exit) {
+                            System.out.println("\nWhat do you want to do?");
+                            System.out.println("1. View and add to cart");
+                            System.out.println("2. Add art for selling");
+                            System.out.println("3. Place a bid");
+                            System.out.println("4. Exit");
+
+                            try {
+                                int sel = sc.nextInt();
+                                sc.nextLine(); 
+
+                                switch (sel) {
+                                    case 1:
+                                        tree.displayArtworks();
+                                        System.out.print("Which art do you want to add to cart? (Type exact name): ");
+                                        String artChoice = sc.nextLine();
+                                        ArtNode selected = tree.search(artChoice);
+                                        if (selected != null) {
+                                            System.out.println("You have added '" + selected.name + "' to the cart");
+
+                                            System.out.print("Do you want to place an order? (Yes/No): ");
+                                            String place = sc.nextLine();
+                                            if (place.equalsIgnoreCase("Yes")) {
+                                                System.out.println("Make payment: Rs." + selected.price + " (Type PAY or DONT PAY)");
+                                                String pay = sc.nextLine();
+                                                if (pay.equalsIgnoreCase("PAY")) {
+                                                    System.out.println("Your order successfully placed and payment confirmed!");
+                                                } else {
+                                                    System.out.println("Order cancelled");
+                                                }
+                                            } else {
+                                                System.out.println("You exited without ordering.");
+                                            }
+                                        } else {
+                                            System.out.println("Artwork not found.");
+                                        }
+                                        break;
+
+                                    case 2:
+                                        try {
+                                            System.out.print("Enter name of the artwork to sell: ");
+                                            String name = sc.nextLine();
+                                            System.out.print("Enter starting price: ");
+                                            int price = sc.nextInt();
+                                            sc.nextLine(); 
+                                            tree.insert(name, price);
+                                            System.out.println(name + " added successfully to the auction at Rs." + price);
+                                        } catch (InputMismatchException e) {
+                                            System.out.println("Invalid price input. Please enter numeric values.");
+                                            sc.nextLine(); 
+                                        }
+                                        break;
+
+                                    case 3:
+                                        try {
+                                            System.out.print("Enter your bid amount (current highest is Rs.20500): ");
+                                            int bid = sc.nextInt();
+                                            if (bid > 20500) {
+                                                System.out.println("Bid placed successfully!");
+                                            } else {
+                                                System.out.println("Bid too low. Current highest bid is Rs.20500");
+                                            }
+                                        } catch (InputMismatchException e) {
+                                            System.out.println("Invalid bid amount. Please enter numeric values.");
+                                            sc.nextLine(); 
+                                        }
+                                        break;
+
+                                    case 4:
+                                        exit = true;
+                                        System.out.println("You are logged out!");
+                                        break;
+
+                                    default:
+                                        System.out.println("Invalid option");
+                                }
+
+                            } catch (InputMismatchException e) {
+                                System.out.println("Please enter a valid number.");
+                                sc.nextLine(); 
+                            }
+                        }
+
+                    } else {
+                        System.out.println("Invalid password");
+                    }
+
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid password input. Please enter numbers only.");
+                    sc.nextLine();
+                }
+
+            } else {
+                System.out.println("Your ID is not logged in");
+            }
+
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid login ID. Please enter numbers only.");
+        }
+
+        sc.close();
+    }
+}
